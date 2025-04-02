@@ -1,0 +1,76 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: sayamame
+  name: default
+rules:
+- apiGroups: ["*", "cluster"]
+  resources: ["*", "nodes"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete", "deletecollection", "proxy"]
+- apiGroups: ["extensions", "policy"]
+  resourceNames: ["restricted"]
+  resources: ["podsecuritypolicies"]
+  verbs: ["use"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: default
+  namespace: sayamame
+subjects:
+- kind: ServiceAccount
+  name: default
+  namespace: sayamame
+roleRef:
+  kind: Role
+  name: default
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: default
+  namespace: sayamame
+rules:
+- apiGroups: [""]
+  resources: ["nodes", "namespaces", "persistentvolumes"]
+  verbs: ["get", "watch", "list"]
+- apiGroups: ["storage.k8s.io"]
+  resources: ["storageclasses"]
+  verbs: ["get", "watch", "list"]
+- apiGroups: ["extensions", "networking.k8s.io"]
+  resources: ["ingresses"]
+  verbs: ["get", "watch", "list"]
+- apiGroups: ["metrics.k8s.io"]
+  resources: ["nodes"]
+  verbs: ["get", "watch", "list"]
+- apiGroups: ["apiextensions.k8s.io"]
+  resources: ["customresourcedefinitions"]
+  verbs: ["get", "watch", "list"]
+- apiGroups: ["rbac.authorization.k8s.io"]
+  resources: ["clusterroles", "clusterrolebindings"]
+  verbs: ["get", "watch", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: default
+  namespace: sayamame
+subjects:
+- kind: ServiceAccount
+  name: default
+  namespace: sayamame
+roleRef:
+  kind: ClusterRole
+  name: default
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: resource-limit
+  namespace: sayamame
+spec:
+  hard:
+    limits.memory: 2Gi
+    requests.storage: 50Gi

@@ -1,0 +1,19 @@
+# place this file as $HOME/.kube/config
+apiVersion: v1
+kind: Config
+clusters:
+- cluster:
+    server: https://kubernetes.soine.site
+    insecure-skip-tls-verify: true
+  name: soine
+contexts:
+- context:
+    cluster: soine
+    namespace: yude
+    user: default
+  name: soine
+current-context: soine
+users:
+- name: default
+  user:
+    token: paste-token-here, kube create token default -n member
